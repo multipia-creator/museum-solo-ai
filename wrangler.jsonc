@@ -5,12 +5,12 @@
   "pages_build_output_dir": "./dist",
   "compatibility_flags": ["nodejs_compat"],
   
-  // D1 Database (Local development)
+  // D1 Database (Production)
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "museum-solo-ai-production",
-      "database_id": "local-dev-database"
+      "database_id": "19b1dccb-0c9b-4672-86f2-0211409d2209"
     }
   ]
   
