@@ -5,29 +5,29 @@
   "pages_build_output_dir": "./dist",
   "compatibility_flags": ["nodejs_compat"],
   
-  // D1 Database (Production)
+  // D1 Database (Local development)
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "museum-solo-ai-production",
-      "database_id": ""
-    }
-  ],
-  
-  // KV Namespace (State cache)
-  "kv_namespaces": [
-    {
-      "binding": "KV",
-      "id": "",
-      "preview_id": ""
-    }
-  ],
-  
-  // R2 Bucket (File storage)
-  "r2_buckets": [
-    {
-      "binding": "R2",
-      "bucket_name": "museum-solo-ai-files"
+      "database_id": "local-dev-database"
     }
   ]
+  
+  // KV Namespace (State cache) - Will be configured after creation
+  // "kv_namespaces": [
+  //   {
+  //     "binding": "KV",
+  //     "id": "",
+  //     "preview_id": ""
+  //   }
+  // ]
+  
+  // R2 Bucket (File storage) - Will be configured after creation
+  // "r2_buckets": [
+  //   {
+  //     "binding": "R2",
+  //     "bucket_name": "museum-solo-ai-files"
+  //   }
+  // ]
 }
