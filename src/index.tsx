@@ -33,7 +33,7 @@ const app = new Hono<HonoContext>();
 app.use('*', logger());
 app.use('/api/*', cors());
 
-// Serve static files
+// Serve static files from public directory
 app.use('/static/*', serveStatic({ root: './public' }));
 
 // ============================================
@@ -481,6 +481,18 @@ app.get('/api/analytics/summary', async (c) => {
       error: error instanceof Error ? error.message : 'Unknown error',
     }, 500);
   }
+});
+
+// ============================================
+// HTML Pages (Simple redirects to static files)
+// ============================================
+
+app.get('/dashboard', (c) => {
+  return c.redirect('/static/dashboard.html');
+});
+
+app.get('/google-mcp', (c) => {
+  return c.redirect('/static/google-mcp.html');
 });
 
 // ============================================
