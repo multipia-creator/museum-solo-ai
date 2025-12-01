@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solo Curator Dashboard - Museum AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    * {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      min-height: 100vh;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .glass-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(168, 85, 247, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(168, 85, 247, 0.2);
+    }
+    
+    .priority-card {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(236, 72, 153, 0.1));
+      border: 2px solid rgba(168, 85, 247, 0.3);
+      border-radius: 20px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .priority-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(168, 85, 247, 0.3);
+    }
+    
+    .priority-urgent {
+      border-color: rgba(239, 68, 68, 0.6);
+      animation: pulse-urgent 2s infinite;
+    }
+    
+    @keyframes pulse-urgent {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      50% { box-shadow: 0 0 20px 10px rgba(239, 68, 68, 0); }
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .loading-shimmer {
+      background: linear-gradient(90deg, 
+        rgba(255,255,255,0.05) 25%, 
+        rgba(255,255,255,0.1) 50%, 
+        rgba(255,255,255,0.05) 75%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 24px rgba(168, 85, 247, 0.4);
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.875rem;
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(168, 85, 247, 0.5);
+    }
+    
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      z-index: 1000;
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      color: rgba(255, 255, 255, 0.6);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .nav-item:hover, .nav-item.active {
+      color: #a855f7;
+      transform: translateY(-2px);
+    }
+    
+    .badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ef4444;
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.125rem 0.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="text-white pb-24">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 glass-card">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <i class="fas fa-robot text-3xl gradient-text"></i>
+          <div>
+            <h1 class="text-xl font-bold">Museum Solo AI</h1>
+            <p class="text-xs text-gray-400">AI 기반 1인 학예사 워크플로우</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <button class="relative" onclick="showNotifications()">
+            <i class="fas fa-bell text-xl text-gray-400 hover:text-purple-400 transition"></i>
+            <span class="badge" id="notif-badge">3</span>
+          </button>
+          <button onclick="showSettings()">
+            <i class="fas fa-cog text-xl text-gray-400 hover:text-purple-400 transition"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- Welcome Section -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-2">
+        👋 안녕하세요, <span id="user-name">김학예</span>님
+      </h2>
+      <p class="text-gray-400">오늘 집중할 작업 3가지를 확인하세요</p>
+    </section>
+
+    <!-- AI Priority Tasks -->
+    <section id="priority-tasks" class="mb-12">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold">
+          <i class="fas fa-fire text-orange-500 mr-2"></i>
+          긴급 우선순위 작업
+        </h3>
+        <button class="btn-secondary" onclick="refreshPriority()">
+          <i class="fas fa-sync-alt"></i>
+          새로고침
+        </button>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="priority-cards-container">
+        <!-- Loading placeholders -->
+        <div class="priority-card loading-shimmer" style="height: 280px;"></div>
+        <div class="priority-card loading-shimmer" style="height: 280px;"></div>
+        <div class="priority-card loading-shimmer" style="height: 280px;"></div>
+      </div>
+    </section>
+
+    <!-- KPI Status Cards -->
+    <section class="mb-12">
+      <h3 class="text-xl font-bold mb-6">
+        <i class="fas fa-chart-bar text-blue-500 mr-2"></i>
+        한눈에 보는 업무 현황
+      </h3>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="kpi-cards-container">
+        <!-- KPI cards will be loaded here -->
+      </div>
+    </section>
+
+    <!-- Projects Grid -->
+    <section>
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold">
+          <i class="fas fa-folder-open text-yellow-500 mr-2"></i>
+          프로젝트 목록
+        </h3>
+        <div class="flex gap-2">
+          <button class="btn-secondary" data-filter="all" onclick="filterProjects('all')">전체</button>
+          <button class="btn-secondary" data-filter="in_progress" onclick="filterProjects('in_progress')">진행중</button>
+          <button class="btn-secondary" data-filter="planning" onclick="filterProjects('planning')">계획중</button>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="projects-container">
+        <!-- Projects will be loaded here -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="container mx-auto">
+      <div class="flex justify-around items-center">
+        <div class="nav-item active" onclick="navigate('dashboard')">
+          <i class="fas fa-home text-2xl"></i>
+          <span class="text-xs">홈</span>
+        </div>
+        <div class="nav-item" onclick="navigate('workflow')">
+          <i class="fas fa-project-diagram text-2xl"></i>
+          <span class="text-xs">워크플로우</span>
+        </div>
+        <div class="nav-item" onclick="navigate('budget')">
+          <i class="fas fa-wallet text-2xl"></i>
+          <span class="text-xs">예산</span>
+        </div>
+        <div class="nav-item" onclick="navigate('analytics')">
+          <i class="fas fa-chart-line text-2xl"></i>
+          <span class="text-xs">분석</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <script src="/static/js/services/data-service-client.js"></script>
+  <script src="/static/js/pages/dashboard.js"></script>
+</body>
+</html>

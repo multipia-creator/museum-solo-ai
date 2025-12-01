@@ -1,34 +1,33 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "museum-solo-ai",
-  "compatibility_date": "2025-12-01",
+  "compatibility_date": "2024-01-01",
   "pages_build_output_dir": "./dist",
-  "compatibility_flags": [
-    "nodejs_compat"
+  "compatibility_flags": ["nodejs_compat"],
+  
+  // D1 Database (Production)
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "museum-solo-ai-production",
+      "database_id": ""
+    }
+  ],
+  
+  // KV Namespace (State cache)
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "",
+      "preview_id": ""
+    }
+  ],
+  
+  // R2 Bucket (File storage)
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "museum-solo-ai-files"
+    }
   ]
-  // "vars": {
-  //   "MY_VAR": "my-variable"
-  // },
-  // "kv_namespaces": [
-  //   {
-  //     "binding": "MY_KV_NAMESPACE",
-  //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  //   }
-  // ],
-  // "r2_buckets": [
-  //   {
-  //     "binding": "MY_BUCKET",
-  //     "bucket_name": "my-bucket"
-  //   }
-  // ],
-  // "d1_databases": [
-  //   {
-  //     "binding": "MY_DB",
-  //     "database_name": "my-database",
-  //     "database_id": ""
-  //   }
-  // ],
-  // "ai": {
-  //   "binding": "AI"
-  // }
 }
