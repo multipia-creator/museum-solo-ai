@@ -20,6 +20,10 @@ import { createAIService } from '../services/ai-service';
 import { createPriorityService } from '../services/priority-service';
 import { createDataService } from '../services/data-service';
 
+// Import MCP Servers (Stub for now - will enable after successful build)
+// import { GoogleWorkspaceMCP } from '../mcp-servers/google-workspace';
+// import { GoogleAIStudioMCP } from '../mcp-servers/google-ai-studio';
+
 const app = new Hono<HonoContext>();
 
 // ============================================
@@ -169,7 +173,138 @@ app.get('/api/priority/daily-schedule', async (c) => {
 });
 
 // ============================================
-// API: AI Service
+// API: Google MCP - Workspace
+// ============================================
+
+app.post('/api/google/workspace/create-doc', async (c) => {
+  try {
+    const body = await c.req.json();
+    // const googleMCP = new GoogleWorkspaceMCP({ apiKey: c.env.GOOGLE_API_KEY || '' });
+    // const result = await googleMCP.createDocument({ title: body.title, content: body.content });
+    
+    // Stub response (MCP server coming soon)
+    const result = {
+      id: 'stub-doc-id',
+      title: body.title,
+      url: 'https://docs.google.com/document/d/stub',
+      createdAt: new Date().toISOString()
+    };
+    
+    return c.json({
+      success: true,
+      data: result,
+      note: 'Stub response - Full MCP integration coming soon'
+    });
+  } catch (error) {
+    return c.json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }, 500);
+  }
+});
+
+app.post('/api/google/workspace/schedule-event', async (c) => {
+  try {
+    const body = await c.req.json();
+    const result = {
+      id: 'stub-event-id',
+      title: body.title,
+      startTime: body.startTime,
+      endTime: body.endTime,
+      url: 'https://calendar.google.com/event?stub'
+    };
+    return c.json({ success: true, data: result, note: 'Stub - MCP coming soon' });
+  } catch (error) {
+    return c.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, 500);
+  }
+});
+
+app.post('/api/google/workspace/send-email', async (c) => {
+  try {
+    const body = await c.req.json();
+    const result = { id: 'stub-email-id', threadId: 'stub-thread', sentAt: new Date().toISOString() };
+    return c.json({ success: true, data: result, note: 'Stub - MCP coming soon' });
+  } catch (error) {
+    return c.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, 500);
+  }
+});
+
+// ============================================
+// API: Google MCP - AI Studio
+// ============================================
+
+app.post('/api/google/ai/gemini/generate', async (c) => {
+  try {
+    const body = await c.req.json();
+    const result = { content: `Generated response for: ${body.prompt.substring(0, 50)}...`, usage: { promptTokens: 10, completionTokens: 50, totalTokens: 60 } };
+    return c.json({ success: true, data: result, note: 'Stub - Full Gemini 2.0 Flash integration coming soon' });
+  } catch (error) {
+    return c.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, 500);
+  }
+});
+
+app.post('/api/google/ai/gemini/vision', async (c) => {
+  try {
+    const body = await c.req.json();
+    const result = { analysis: 'Image analysis result', detectedObjects: ['object1', 'object2'], colors: ['blue', 'red'], text: 'detected text' };
+    return c.json({ success: true, data: result, note: 'Stub - Gemini Vision coming soon' });
+  } catch (error) {
+    return c.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, 500);
+  }
+});
+
+app.post('/api/google/ai/research', async (c) => {
+  try {
+    const body = await c.req.json();
+    const result = { summary: `Research on ${body.topic}`, keyPoints: ['point1', 'point2'], sources: [] };
+    return c.json({ success: true, data: result, note: 'Stub - NotebookLM integration coming soon' });
+  } catch (error) {
+    return c.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, 500);
+  }
+});
+
+app.post('/api/google/ai/audio-overview', async (c) => {
+  try {
+    const body = await c.req.json();
+    const result = { script: 'Audio overview script...', duration: body.duration || 5, sections: [] };
+    return c.json({ success: true, data: result, note: 'Stub - Audio Overview coming soon' });
+  } catch (error) {
+    return c.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, 500);
+  }
+});
+
+app.post('/api/google/ai/quiz', async (c) => {
+  try {
+    const body = await c.req.json();
+    const result = { title: `Quiz: ${body.topic}`, questions: [{ id: 1, type: 'multiple-choice', question: 'Sample?', options: ['A', 'B', 'C', 'D'], correctAnswer: 'A', explanation: 'explanation', difficulty: 'medium' }] };
+    return c.json({ success: true, data: result, note: 'Stub - Quiz Generator coming soon' });
+  } catch (error) {
+    return c.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, 500);
+  }
+});
+
+app.post('/api/google/ai/slides', async (c) => {
+  try {
+    const body = await c.req.json();
+    const result = { title: body.topic, slides: [{ slideNumber: 1, title: 'Slide 1', content: ['bullet 1', 'bullet 2'], notes: 'notes' }] };
+    return c.json({ success: true, data: result, note: 'Stub - Slides Generator coming soon' });
+  } catch (error) {
+    return c.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, 500);
+  }
+});
+
+app.post('/api/google/ai/exhibition-label', async (c) => {
+  try {
+    const body = await c.req.json();
+    const result = { labels: { en: { title: body.artworkTitle, description: 'Description...', technicalInfo: body.medium } }, imageAnalysis: 'Analysis...' };
+    return c.json({ success: true, data: result, note: 'Stub - Full Gemini Vision + Exhibition Label generation coming soon' });
+  } catch (error) {
+    return c.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, 500);
+  }
+});
+
+// ============================================
+// API: AI Service (Legacy)
 // ============================================
 
 app.post('/api/ai/generate-label', async (c) => {
@@ -433,7 +568,8 @@ app.get('/', (c) => {
 
     <div class="mt-8 text-center text-sm text-gray-400">
       <p>Built with ❤️ for Solo Museum Curators</p>
-      <p class="mt-2">Powered by Cloudflare Workers | Hono | OpenAI GPT-4</p>
+      <p class="mt-2">Powered by Cloudflare Workers | Hono | Google Gemini 2.0 Flash</p>
+      <p class="mt-1 text-xs">🔥 NEW: MCP Integration with Google Workspace & AI Studio</p>
     </div>
   </div>
 </body>

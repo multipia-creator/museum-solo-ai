@@ -10,5 +10,13 @@ export default defineConfig({
       adapter,
       entry: 'src/index.tsx'
     })
-  ]
+  ],
+  build: {
+    rollupOptions: {
+      external: [
+        '../mcp-servers/google-workspace',
+        '../mcp-servers/google-ai-studio'
+      ]
+    }
+  }
 })

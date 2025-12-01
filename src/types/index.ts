@@ -4,6 +4,40 @@
  */
 
 // ============================================
+// Google MCP Types
+// ============================================
+
+export interface GoogleWorkspaceDocument {
+  id: string;
+  title: string;
+  url: string;
+  createdAt: string;
+}
+
+export interface GoogleCalendarEvent {
+  id: string;
+  title: string;
+  startTime: string;
+  endTime: string;
+  url: string;
+}
+
+export interface GoogleEmail {
+  id: string;
+  threadId: string;
+  sentAt: string;
+}
+
+export interface GoogleAIResponse {
+  content: string;
+  usage: {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+  };
+}
+
+// ============================================
 // Core Domain Types
 // ============================================
 

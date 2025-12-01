@@ -15,6 +15,11 @@
     "test": "curl http://localhost:3000/health"
   },
   "dependencies": {
+    "@google-cloud/text-to-speech": "^6.4.0",
+    "@google-cloud/vision": "^5.3.4",
+    "@google/generative-ai": "^0.24.1",
+    "@modelcontextprotocol/sdk": "^1.23.0",
+    "googleapis": "^166.0.0",
     "hono": "^4.10.7"
   },
   "devDependencies": {

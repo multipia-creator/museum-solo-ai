@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google MCP Integration - Museum Solo AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen text-white">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">
+        <i class="fab fa-google mr-2"></i>
+        Google MCP Integration
+      </h1>
+      <p class="text-gray-300">Model Context Protocol + Google Workspace & AI Studio</p>
+      <p class="text-xs text-yellow-400 mt-2">
+        🚧 Phase 3: Stub Endpoints Active (Full integration coming soon)
+      </p>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="flex gap-2 mb-6 overflow-x-auto">
+      <button onclick="showTab('workspace')" id="tab-workspace" class="tab-btn active px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition">
+        <i class="fas fa-briefcase mr-2"></i>Workspace
+      </button>
+      <button onclick="showTab('gemini')" id="tab-gemini" class="tab-btn px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition">
+        <i class="fas fa-robot mr-2"></i>Gemini
+      </button>
+      <button onclick="showTab('notebooklm')" id="tab-notebooklm" class="tab-btn px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition">
+        <i class="fas fa-book mr-2"></i>NotebookLM
+      </button>
+      <button onclick="showTab('quiz')" id="tab-quiz" class="tab-btn px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition">
+        <i class="fas fa-question-circle mr-2"></i>Quiz
+      </button>
+      <button onclick="showTab('slides')" id="tab-slides" class="tab-btn px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition">
+        <i class="fas fa-presentation mr-2"></i>Slides
+      </button>
+      <button onclick="showTab('exhibition')" id="tab-exhibition" class="tab-btn px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition">
+        <i class="fas fa-palette mr-2"></i>Exhibition Label
+      </button>
+    </div>
+
+    <!-- Workspace Tab -->
+    <div id="workspace-tab" class="tab-content">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Create Document -->
+        <div class="bg-white/5 backdrop-blur-lg p-6 rounded-xl border border-white/10">
+          <h3 class="text-xl font-bold mb-4"><i class="fas fa-file-alt mr-2"></i>Create Document</h3>
+          <input type="text" id="doc-title" placeholder="Document Title" class="w-full mb-3 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400">
+          <textarea id="doc-content" placeholder="Document Content" rows="4" class="w-full mb-3 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400"></textarea>
+          <button onclick="createDocument()" class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition">Create</button>
+          <div id="doc-result" class="mt-4 text-sm text-gray-300"></div>
+        </div>
+
+        <!-- Schedule Event -->
+        <div class="bg-white/5 backdrop-blur-lg p-6 rounded-xl border border-white/10">
+          <h3 class="text-xl font-bold mb-4"><i class="fas fa-calendar mr-2"></i>Schedule Event</h3>
+          <input type="text" id="event-title" placeholder="Event Title" class="w-full mb-3 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400">
+          <input type="datetime-local" id="event-start" class="w-full mb-3 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white">
+          <input type="datetime-local" id="event-end" class="w-full mb-3 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white">
+          <button onclick="scheduleEvent()" class="w-full px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg transition">Schedule</button>
+          <div id="event-result" class="mt-4 text-sm text-gray-300"></div>
+        </div>
+
+        <!-- Send Email -->
+        <div class="bg-white/5 backdrop-blur-lg p-6 rounded-xl border border-white/10">
+          <h3 class="text-xl font-bold mb-4"><i class="fas fa-envelope mr-2"></i>Send Email</h3>
+          <input type="email" id="email-to" placeholder="To" class="w-full mb-3 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400">
+          <input type="text" id="email-subject" placeholder="Subject" class="w-full mb-3 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400">
+          <textarea id="email-body" placeholder="Email Body" rows="3" class="w-full mb-3 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400"></textarea>
+          <button onclick="sendEmail()" class="w-full px-4 py-2 bg-purple-500 hover:bg-purple-600 rounded-lg transition">Send</button>
+          <div id="email-result" class="mt-4 text-sm text-gray-300"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gemini Tab -->
+    <div id="gemini-tab" class="tab-content hidden">
+      <div class="bg-white/5 backdrop-blur-lg p-6 rounded-xl border border-white/10 max-w-3xl mx-auto">
+        <h3 class="text-2xl font-bold mb-4"><i class="fas fa-magic mr-2"></i>Gemini 2.0 Flash Generation</h3>
+        <textarea id="gemini-prompt" placeholder="Enter your prompt..." rows="5" class="w-full mb-4 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400"></textarea>
+        <button onclick="generateGemini()" class="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 rounded-lg transition text-lg font-semibold">
+          <i class="fas fa-robot mr-2"></i>Generate with Gemini
+        </button>
+        <div id="gemini-result" class="mt-6 p-4 rounded-lg bg-white/5 border border-white/10 text-sm"></div>
+      </div>
+    </div>
+
+    <!-- NotebookLM Tab -->
+    <div id="notebooklm-tab" class="tab-content hidden">
+      <div class="bg-white/5 backdrop-blur-lg p-6 rounded-xl border border-white/10 max-w-3xl mx-auto">
+        <h3 class="text-2xl font-bold mb-4"><i class="fas fa-search mr-2"></i>Deep Research (NotebookLM)</h3>
+        <input type="text" id="research-topic" placeholder="Research Topic" class="w-full mb-4 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400">
+        <textarea id="research-sources" placeholder="Sources (one per line)" rows="4" class="w-full mb-4 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400"></textarea>
+        <button onclick="deepResearch()" class="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 rounded-lg transition text-lg font-semibold">
+          <i class="fas fa-book-open mr-2"></i>Start Deep Research
+        </button>
+        <div id="research-result" class="mt-6 p-4 rounded-lg bg-white/5 border border-white/10 text-sm"></div>
+      </div>
+    </div>
+
+    <!-- Quiz Tab -->
+    <div id="quiz-tab" class="tab-content hidden">
+      <div class="bg-white/5 backdrop-blur-lg p-6 rounded-xl border border-white/10 max-w-3xl mx-auto">
+        <h3 class="text-2xl font-bold mb-4"><i class="fas fa-question-circle mr-2"></i>Quiz Generator</h3>
+        <input type="text" id="quiz-topic" placeholder="Quiz Topic" class="w-full mb-4 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400">
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <select id="quiz-difficulty" class="px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white">
+            <option value="easy">Easy</option>
+            <option value="medium" selected>Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+          <input type="number" id="quiz-count" placeholder="Number of Questions" value="5" min="1" max="20" class="px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white">
+        </div>
+        <button onclick="generateQuiz()" class="w-full px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 rounded-lg transition text-lg font-semibold">
+          <i class="fas fa-lightbulb mr-2"></i>Generate Quiz
+        </button>
+        <div id="quiz-result" class="mt-6 p-4 rounded-lg bg-white/5 border border-white/10 text-sm"></div>
+      </div>
+    </div>
+
+    <!-- Slides Tab -->
+    <div id="slides-tab" class="tab-content hidden">
+      <div class="bg-white/5 backdrop-blur-lg p-6 rounded-xl border border-white/10 max-w-3xl mx-auto">
+        <h3 class="text-2xl font-bold mb-4"><i class="fas fa-presentation mr-2"></i>Slides Generator</h3>
+        <input type="text" id="slides-topic" placeholder="Presentation Topic" class="w-full mb-4 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400">
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <input type="number" id="slides-count" placeholder="Number of Slides" value="10" min="3" max="30" class="px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white">
+          <select id="slides-style" class="px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white">
+            <option value="professional" selected>Professional</option>
+            <option value="creative">Creative</option>
+            <option value="minimal">Minimal</option>
+            <option value="academic">Academic</option>
+          </select>
+        </div>
+        <button onclick="generateSlides()" class="w-full px-6 py-3 bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 rounded-lg transition text-lg font-semibold">
+          <i class="fas fa-file-powerpoint mr-2"></i>Generate Slides
+        </button>
+        <div id="slides-result" class="mt-6 p-4 rounded-lg bg-white/5 border border-white/10 text-sm"></div>
+      </div>
+    </div>
+
+    <!-- Exhibition Label Tab -->
+    <div id="exhibition-tab" class="tab-content hidden">
+      <div class="bg-white/5 backdrop-blur-lg p-6 rounded-xl border border-white/10 max-w-3xl mx-auto">
+        <h3 class="text-2xl font-bold mb-4"><i class="fas fa-palette mr-2"></i>Exhibition Label Generator</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <input type="text" id="label-title" placeholder="Artwork Title" class="px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400">
+          <input type="text" id="label-artist" placeholder="Artist Name" class="px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400">
+          <input type="text" id="label-year" placeholder="Year" class="px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400">
+          <input type="text" id="label-medium" placeholder="Medium" class="px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400">
+        </div>
+        <button onclick="generateLabel()" class="w-full px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-lg transition text-lg font-semibold">
+          <i class="fas fa-tag mr-2"></i>Generate Exhibition Label
+        </button>
+        <div id="label-result" class="mt-6 p-4 rounded-lg bg-white/5 border border-white/10 text-sm"></div>
+      </div>
+    </div>
+
+    <!-- Back to Dashboard -->
+    <div class="text-center mt-8">
+      <a href="/dashboard.html" class="inline-block px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition">
+        <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active', 'bg-white/20'));
+      document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+      document.getElementById(`tab-${tabName}`).classList.add('active', 'bg-white/20');
+    }
+
+    // Helper function for API calls
+    async function callAPI(endpoint, data) {
+      try {
+        const response = await fetch(`/api/google/${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        return await response.json();
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    }
+
+    // Workspace functions
+    async function createDocument() {
+      const title = document.getElementById('doc-title').value;
+      const content = document.getElementById('doc-content').value;
+      const result = await callAPI('workspace/create-doc', { title, content });
+      document.getElementById('doc-result').innerHTML = result.success 
+        ? `✅ Created: <a href="${result.data.url}" target="_blank" class="text-blue-400 underline">${result.data.title}</a><br><small class="text-yellow-400">${result.note || ''}</small>`
+        : `❌ Error: ${result.error}`;
+    }
+
+    async function scheduleEvent() {
+      const title = document.getElementById('event-title').value;
+      const startTime = document.getElementById('event-start').value;
+      const endTime = document.getElementById('event-end').value;
+      const result = await callAPI('workspace/schedule-event', { title, startTime, endTime });
+      document.getElementById('event-result').innerHTML = result.success 
+        ? `✅ Scheduled: <a href="${result.data.url}" target="_blank" class="text-green-400 underline">${result.data.title}</a><br><small class="text-yellow-400">${result.note || ''}</small>`
+        : `❌ Error: ${result.error}`;
+    }
+
+    async function sendEmail() {
+      const to = document.getElementById('email-to').value;
+      const subject = document.getElementById('email-subject').value;
+      const body = document.getElementById('email-body').value;
+      const result = await callAPI('workspace/send-email', { to, subject, body });
+      document.getElementById('email-result').innerHTML = result.success 
+        ? `✅ Sent to ${to}<br><small class="text-yellow-400">${result.note || ''}</small>`
+        : `❌ Error: ${result.error}`;
+    }
+
+    // Gemini function
+    async function generateGemini() {
+      const prompt = document.getElementById('gemini-prompt').value;
+      document.getElementById('gemini-result').innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating...';
+      const result = await callAPI('ai/gemini/generate', { prompt });
+      document.getElementById('gemini-result').innerHTML = result.success 
+        ? `<div class="whitespace-pre-wrap">${result.data.content}</div><div class="mt-4 text-xs text-gray-400">Tokens: ${result.data.usage.totalTokens}</div><small class="text-yellow-400">${result.note || ''}</small>`
+        : `❌ Error: ${result.error}`;
+    }
+
+    // Deep Research function
+    async function deepResearch() {
+      const topic = document.getElementById('research-topic').value;
+      const sources = document.getElementById('research-sources').value.split('\n').filter(s => s.trim());
+      document.getElementById('research-result').innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Researching...';
+      const result = await callAPI('ai/research', { topic, sources, outputFormat: 'summary' });
+      document.getElementById('research-result').innerHTML = result.success 
+        ? `<div class="whitespace-pre-wrap">${result.data.summary}</div><small class="text-yellow-400 mt-2 block">${result.note || ''}</small>`
+        : `❌ Error: ${result.error}`;
+    }
+
+    // Quiz function
+    async function generateQuiz() {
+      const topic = document.getElementById('quiz-topic').value;
+      const difficulty = document.getElementById('quiz-difficulty').value;
+      const numberOfQuestions = parseInt(document.getElementById('quiz-count').value);
+      document.getElementById('quiz-result').innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating quiz...';
+      const result = await callAPI('ai/quiz', { topic, difficulty, numberOfQuestions });
+      document.getElementById('quiz-result').innerHTML = result.success 
+        ? `<h4 class="font-bold mb-2">${result.data.title}</h4>${result.data.questions.map((q, i) => `<div class="mb-3 p-3 bg-white/5 rounded"><strong>Q${i+1}:</strong> ${q.question}<br><small class="text-gray-400">${q.options ? q.options.join(' | ') : ''}</small></div>`).join('')}<small class="text-yellow-400 mt-2 block">${result.note || ''}</small>`
+        : `❌ Error: ${result.error}`;
+    }
+
+    // Slides function
+    async function generateSlides() {
+      const topic = document.getElementById('slides-topic').value;
+      const numberOfSlides = parseInt(document.getElementById('slides-count').value);
+      const style = document.getElementById('slides-style').value;
+      document.getElementById('slides-result').innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating slides...';
+      const result = await callAPI('ai/slides', { topic, numberOfSlides, style });
+      document.getElementById('slides-result').innerHTML = result.success 
+        ? `<h4 class="font-bold mb-2">${result.data.title}</h4>${result.data.slides.map(s => `<div class="mb-3 p-3 bg-white/5 rounded"><strong>Slide ${s.slideNumber}:</strong> ${s.title}<br><ul class="text-sm text-gray-300 mt-1">${s.content.map(c => `<li>• ${c}</li>`).join('')}</ul></div>`).join('')}<small class="text-yellow-400 mt-2 block">${result.note || ''}</small>`
+        : `❌ Error: ${result.error}`;
+    }
+
+    // Exhibition Label function
+    async function generateLabel() {
+      const artworkTitle = document.getElementById('label-title').value;
+      const artist = document.getElementById('label-artist').value;
+      const year = document.getElementById('label-year').value;
+      const medium = document.getElementById('label-medium').value;
+      document.getElementById('label-result').innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating label...';
+      const result = await callAPI('ai/exhibition-label', { artworkTitle, artist, year, medium, languages: ['en', 'ko', 'zh'] });
+      document.getElementById('label-result').innerHTML = result.success 
+        ? `<div>${Object.entries(result.data.labels).map(([lang, label]) => `<div class="mb-4 p-3 bg-white/5 rounded"><strong>${lang.toUpperCase()}:</strong><br>${label.description}</div>`).join('')}</div><small class="text-yellow-400 mt-2 block">${result.note || ''}</small>`
+        : `❌ Error: ${result.error}`;
+    }
+  </script>
+</body>
+</html>
