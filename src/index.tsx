@@ -12,7 +12,6 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
-import { serveStatic } from 'hono/cloudflare-workers';
 import type { HonoContext } from './types';
 
 // Import services
@@ -33,8 +32,8 @@ const app = new Hono<HonoContext>();
 app.use('*', logger());
 app.use('/api/*', cors());
 
-// Serve static files from public directory
-app.use('/static/*', serveStatic({ root: './public' }));
+// Note: Static files are served by Cloudflare Pages directly from dist/static/
+// No need for serveStatic middleware
 
 // ============================================
 // Health Check
@@ -484,109 +483,302 @@ app.get('/api/analytics/summary', async (c) => {
 });
 
 // ============================================
-// HTML Pages (Simple redirects to static files)
-// ============================================
-
-app.get('/dashboard', (c) => {
-  return c.redirect('/static/dashboard.html');
-});
-
-app.get('/google-mcp', (c) => {
-  return c.redirect('/static/google-mcp.html');
-});
-
-// ============================================
 // Dashboard (Default Route)
 // ============================================
 
 app.get('/', (c) => {
-  return c.html(`
-<!DOCTYPE html>
+  return c.html(`<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Museum Solo AI System</title>
+  <title>Museum Solo AI - Genspark Style</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .search-box {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+    }
+    .icon-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.3s;
+    }
+    .icon-card:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(99,102,241,0.5);
+      transform: translateY(-2px);
+    }
+    .gallery-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    .gallery-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 32px rgba(99,102,241,0.3);
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen text-white">
-  <div class="container mx-auto px-4 py-12">
-    <div class="text-center mb-12">
-      <h1 class="text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-        <i class="fas fa-robot mr-3"></i>
-        Museum Solo AI System
-      </h1>
-      <p class="text-xl text-gray-300">
-        AI-Powered Workflow Automation for Solo Museum Curators
-      </p>
-      <p class="text-sm text-gray-400 mt-2">
-        Version 1.0.0-alpha | MSA Architecture
-      </p>
+<body class="min-h-screen p-4">
+  <!-- Header -->
+  <div class="max-w-7xl mx-auto">
+    <div class="flex items-center justify-between mb-8 pt-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+          <i class="fas fa-museum text-white text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold">Museum Solo AI</h1>
+          <p class="text-xs text-gray-400">v1.0.0-alpha</p>
+        </div>
+      </div>
+      <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-semibold transition">
+        로그인
+      </button>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-      <div class="bg-white/5 backdrop-blur-lg p-6 rounded-2xl border border-white/10">
-        <div class="text-4xl mb-3">🤖</div>
-        <h3 class="text-lg font-semibold mb-2">AI Service</h3>
-        <p class="text-sm text-gray-400">Label, SNS, Email automation</p>
-      </div>
-      
-      <div class="bg-white/5 backdrop-blur-lg p-6 rounded-2xl border border-white/10">
-        <div class="text-4xl mb-3">🎯</div>
-        <h3 class="text-lg font-semibold mb-2">Priority Service</h3>
-        <p class="text-sm text-gray-400">Smart task prioritization</p>
-      </div>
-      
-      <div class="bg-white/5 backdrop-blur-lg p-6 rounded-2xl border border-white/10">
-        <div class="text-4xl mb-3">💾</div>
-        <h3 class="text-lg font-semibold mb-2">Data Service</h3>
-        <p class="text-sm text-gray-400">Real-time state sync</p>
-      </div>
-      
-      <div class="bg-white/5 backdrop-blur-lg p-6 rounded-2xl border border-white/10">
-        <div class="text-4xl mb-3">🔄</div>
-        <h3 class="text-lg font-semibold mb-2">Workflow Service</h3>
-        <p class="text-sm text-gray-400">Canvas integration</p>
+    <!-- AI Search Box (Genspark Style) -->
+    <div class="search-box rounded-2xl p-2 mb-8 max-w-4xl mx-auto">
+      <div class="flex items-center gap-3 px-4">
+        <i class="fas fa-magic text-purple-400"></i>
+        <input 
+          type="text" 
+          placeholder="무엇을 도와드릴까요? 예: '다음 주 전시 라벨 생성해줘', '오늘 우선순위 작업 알려줘'" 
+          class="flex-1 bg-transparent border-none outline-none py-4 text-white placeholder-gray-500"
+        />
+        <button class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg font-semibold hover:opacity-90 transition">
+          실행
+        </button>
       </div>
     </div>
 
-    <div class="bg-white/5 backdrop-blur-lg p-8 rounded-2xl border border-white/10">
-      <h2 class="text-2xl font-bold mb-6">
-        <i class="fas fa-chart-line mr-2"></i>
-        Expected Impact
-      </h2>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="text-center">
-          <div class="text-3xl font-bold text-green-400 mb-2">-50%</div>
-          <div class="text-sm text-gray-400">Monthly Hours</div>
+    <!-- Quick Access Icons (Genspark Style Grid) -->
+    <div class="mb-8">
+      <h2 class="text-sm text-gray-400 mb-4 px-2">빠른 실행</h2>
+      <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-4">
+        <!-- Row 1 -->
+        <a href="/dashboard" class="icon-card p-4 rounded-xl flex flex-col items-center gap-2 cursor-pointer">
+          <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+            <i class="fas fa-chart-line text-blue-400 text-xl"></i>
+          </div>
+          <span class="text-xs text-center">대시보드</span>
+        </a>
+
+        <div class="icon-card p-4 rounded-xl flex flex-col items-center gap-2 cursor-pointer">
+          <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+            <i class="fas fa-tags text-purple-400 text-xl"></i>
+          </div>
+          <span class="text-xs text-center">라벨 생성</span>
+        </div>
+
+        <div class="icon-card p-4 rounded-xl flex flex-col items-center gap-2 cursor-pointer">
+          <div class="w-12 h-12 bg-pink-500/20 rounded-lg flex items-center justify-center">
+            <i class="fas fa-camera text-pink-400 text-xl"></i>
+          </div>
+          <span class="text-xs text-center">SNS</span>
+        </div>
+
+        <div class="icon-card p-4 rounded-xl flex flex-col items-center gap-2 cursor-pointer">
+          <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
+            <i class="fas fa-envelope text-green-400 text-xl"></i>
+          </div>
+          <span class="text-xs text-center">이메일</span>
+        </div>
+
+        <div class="icon-card p-4 rounded-xl flex flex-col items-center gap-2 cursor-pointer">
+          <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+            <i class="fas fa-file-alt text-yellow-400 text-xl"></i>
+          </div>
+          <span class="text-xs text-center">문서</span>
+        </div>
+
+        <div class="icon-card p-4 rounded-xl flex flex-col items-center gap-2 cursor-pointer">
+          <div class="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
+            <i class="fas fa-calendar text-red-400 text-xl"></i>
+          </div>
+          <span class="text-xs text-center">일정</span>
+        </div>
+
+        <a href="/google-mcp" class="icon-card p-4 rounded-xl flex flex-col items-center gap-2 cursor-pointer">
+          <div class="w-12 h-12 bg-teal-500/20 rounded-lg flex items-center justify-center">
+            <i class="fab fa-google text-teal-400 text-xl"></i>
+          </div>
+          <span class="text-xs text-center">Google MCP</span>
+        </a>
+
+        <div class="icon-card p-4 rounded-xl flex flex-col items-center gap-2 cursor-pointer">
+          <div class="w-12 h-12 bg-indigo-500/20 rounded-lg flex items-center justify-center">
+            <i class="fas fa-search text-indigo-400 text-xl"></i>
+          </div>
+          <span class="text-xs text-center">리서치</span>
+        </div>
+
+        <div class="icon-card p-4 rounded-xl flex flex-col items-center gap-2 cursor-pointer">
+          <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center">
+            <i class="fas fa-question-circle text-orange-400 text-xl"></i>
+          </div>
+          <span class="text-xs text-center">퀴즈</span>
+        </div>
+
+        <div class="icon-card p-4 rounded-xl flex flex-col items-center gap-2 cursor-pointer">
+          <div class="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+            <i class="fas fa-presentation text-cyan-400 text-xl"></i>
+          </div>
+          <span class="text-xs text-center">슬라이드</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="flex gap-2 mb-6 border-b border-gray-800 pb-2">
+      <button class="px-4 py-2 bg-white/10 rounded-t-lg text-sm font-semibold">전체</button>
+      <button class="px-4 py-2 text-gray-400 hover:text-white text-sm">최근 작업</button>
+      <button class="px-4 py-2 text-gray-400 hover:text-white text-sm">템플릿</button>
+      <button class="px-4 py-2 text-gray-400 hover:text-white text-sm">북마크</button>
+    </div>
+
+    <!-- Gallery Cards (Genspark Style) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+      <!-- Card 1 -->
+      <div class="gallery-card cursor-pointer">
+        <div class="h-40 bg-gradient-to-br from-blue-500/30 to-purple-500/30 flex items-center justify-center">
+          <i class="fas fa-chart-bar text-6xl text-white/50"></i>
+        </div>
+        <div class="p-4">
+          <div class="text-xs text-gray-400 mb-1">대시보드</div>
+          <h3 class="font-semibold mb-2">이번 주 우선순위 작업</h3>
+          <p class="text-xs text-gray-400">AI가 분석한 상위 3개 작업</p>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="gallery-card cursor-pointer">
+        <div class="h-40 bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex items-center justify-center">
+          <i class="fas fa-tag text-6xl text-white/50"></i>
+        </div>
+        <div class="p-4">
+          <div class="text-xs text-gray-400 mb-1">최근 생성</div>
+          <h3 class="font-semibold mb-2">현대미술 전시 라벨</h3>
+          <p class="text-xs text-gray-400">한/영/중 3개 언어 라벨</p>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="gallery-card cursor-pointer">
+        <div class="h-40 bg-gradient-to-br from-green-500/30 to-teal-500/30 flex items-center justify-center">
+          <i class="fab fa-google text-6xl text-white/50"></i>
+        </div>
+        <div class="p-4">
+          <div class="text-xs text-gray-400 mb-1">Google MCP</div>
+          <h3 class="font-semibold mb-2">Google Workspace 자동화</h3>
+          <p class="text-xs text-gray-400">문서, 일정, 이메일 통합</p>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="gallery-card cursor-pointer">
+        <div class="h-40 bg-gradient-to-br from-yellow-500/30 to-orange-500/30 flex items-center justify-center">
+          <i class="fas fa-book text-6xl text-white/50"></i>
+        </div>
+        <div class="p-4">
+          <div class="text-xs text-gray-400 mb-1">리서치</div>
+          <h3 class="font-semibold mb-2">NotebookLM 딥 리서치</h3>
+          <p class="text-xs text-gray-400">AI 기반 자료 분석</p>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="gallery-card cursor-pointer">
+        <div class="h-40 bg-gradient-to-br from-red-500/30 to-pink-500/30 flex items-center justify-center">
+          <i class="fas fa-palette text-6xl text-white/50"></i>
+        </div>
+        <div class="p-4">
+          <div class="text-xs text-gray-400 mb-1">템플릿</div>
+          <h3 class="font-semibold mb-2">전시 기획서 템플릿</h3>
+          <p class="text-xs text-gray-400">재사용 가능한 문서</p>
+        </div>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="gallery-card cursor-pointer">
+        <div class="h-40 bg-gradient-to-br from-indigo-500/30 to-blue-500/30 flex items-center justify-center">
+          <i class="fas fa-users text-6xl text-white/50"></i>
+        </div>
+        <div class="p-4">
+          <div class="text-xs text-gray-400 mb-1">교육</div>
+          <h3 class="font-semibold mb-2">관람객 교육 퀴즈</h3>
+          <p class="text-xs text-gray-400">AI 생성 교육 콘텐츠</p>
+        </div>
+      </div>
+
+      <!-- Card 7 -->
+      <div class="gallery-card cursor-pointer">
+        <div class="h-40 bg-gradient-to-br from-cyan-500/30 to-teal-500/30 flex items-center justify-center">
+          <i class="fas fa-presentation text-6xl text-white/50"></i>
+        </div>
+        <div class="p-4">
+          <div class="text-xs text-gray-400 mb-1">프레젠테이션</div>
+          <h3 class="font-semibold mb-2">전시 소개 슬라이드</h3>
+          <p class="text-xs text-gray-400">AI 자동 생성</p>
+        </div>
+      </div>
+
+      <!-- Card 8 -->
+      <div class="gallery-card cursor-pointer">
+        <div class="h-40 bg-gradient-to-br from-pink-500/30 to-purple-500/30 flex items-center justify-center">
+          <i class="fas fa-camera text-6xl text-white/50"></i>
+        </div>
+        <div class="p-4">
+          <div class="text-xs text-gray-400 mb-1">SNS</div>
+          <h3 class="font-semibold mb-2">Instagram 포스트</h3>
+          <p class="text-xs text-gray-400">자동 생성된 콘텐츠</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Banner -->
+    <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-2xl p-8 border border-purple-500/30">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        <div>
+          <div class="text-4xl font-bold text-green-400 mb-2">-50%</div>
+          <div class="text-sm text-gray-300">월간 작업 시간 감소</div>
           <div class="text-xs text-gray-500 mt-1">262.5h → 130h</div>
         </div>
-        
-        <div class="text-center">
-          <div class="text-3xl font-bold text-blue-400 mb-2">-87%</div>
-          <div class="text-sm text-gray-400">Label Creation</div>
+        <div>
+          <div class="text-4xl font-bold text-blue-400 mb-2">-87%</div>
+          <div class="text-sm text-gray-300">라벨 생성 시간 단축</div>
           <div class="text-xs text-gray-500 mt-1">2h → 5min</div>
         </div>
-        
-        <div class="text-center">
-          <div class="text-3xl font-bold text-purple-400 mb-2">-80%</div>
-          <div class="text-sm text-gray-400">Time to Action</div>
-          <div class="text-xs text-gray-500 mt-1">10s → 2s</div>
+        <div>
+          <div class="text-4xl font-bold text-purple-400 mb-2">+42%</div>
+          <div class="text-sm text-gray-300">작업 완료율 향상</div>
+          <div class="text-xs text-gray-500 mt-1">65% → 92%</div>
         </div>
       </div>
     </div>
-
-    <div class="mt-8 text-center text-sm text-gray-400">
-      <p>Built with ❤️ for Solo Museum Curators</p>
-      <p class="mt-2">Powered by Cloudflare Workers | Hono | Google Gemini 2.0 Flash</p>
-      <p class="mt-1 text-xs">🔥 NEW: MCP Integration with Google Workspace & AI Studio</p>
-    </div>
   </div>
+
+  <script>
+    // Search functionality
+    document.querySelector('input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const query = e.target.value;
+        alert('AI 프롬프트 실행: ' + query);
+        // TODO: Integrate with AI service
+      }
+    });
+  </script>
 </body>
 </html>
-  `);
+`);
 });
 
 export default app;
